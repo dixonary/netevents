@@ -61,7 +61,7 @@ class Client {
         events.set(event, callback);
         mutex.release();
 
-        print("events", 'Added event handler "$event"', haxe.PosInfos);
+        print("events", 'Added event handler "$event"');
     }
 
     public function connect(Host:String, Port:Int) {
@@ -89,19 +89,19 @@ class Client {
                 break;
             }
             catch(e:Dynamic) {
-                print("conn", 'Retrying... ("$e") [attempt $attempts of $maxRetries]', haxe.PosInfos);
+                print("conn", 'Retrying... ("$e") [attempt $attempts of $maxRetries]');
                 Sys.sleep(retrySpacing);
             }
         }
 
         if(failed) {
-            print("conn", 'Connection failed after $maxRetries attempts.', haxe.PosInfos);
+            print("conn", 'Connection failed after $maxRetries attempts.');
             if(onFailure != null) onFailure();
             else                  throw 'Connection failed.';
         }
         else {
-            print("conn", "Connected!", haxe.PosInfos);
-            print("conn", "Dispatching TCP send/rcv threads", haxe.PosInfos);
+            print("conn", "Connected!");
+            print("conn", "Dispatching TCP send/rcv threads");
 
             sockets = {
                 tIn:  Thread.create(socketInThread),
@@ -128,19 +128,19 @@ class Client {
             while(true) {
                 var k = sock.input.readLine();
 
-                printVerbose("recv", k, haxe.PosInfos);
+                printVerbose("recv", k);
 
                 var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
                 if(c.type == null || c.type == "") {
-                    print("recv", "Received data has no TYPE - discarding", haxe.PosInfos);
+                    print("recv", "Received data has no TYPE - discarding");
                     continue;
                 }
 
                 mutex.acquire();
                 var callback:Null<Dynamic->Void> = events.get(c.type);
                 if(callback == null) {
-                    print("events", 'Received data type "${c.type}" has no callback - discarding', haxe.PosInfos);
+                    print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
                 else {
                     callback(c.content);
@@ -150,7 +150,7 @@ class Client {
             }
         }
         catch(e:Dynamic) {
-            print("err", '$e - disconnected', haxe.PosInfos);
+            print("err", '$e - disconnected');
             if(disconnected) return;
             disconnected = true;
             if(onDisconnect == null) {
@@ -169,12 +169,12 @@ class Client {
         try {
             while(true) {
                 var k:String = Thread.readMessage(true);
-                printVerbose("send", k, haxe.PosInfos);
+                printVerbose("send", k);
                 sock.write(k+"\n");
             }
         }
         catch(e:Dynamic) {
-            print("err", '$e - disconnected', haxe.PosInfos);
+            print("err", '$e - disconnected');
             if(disconnected) return;
             disconnected = true;
             if(onDisconnect == null) {
