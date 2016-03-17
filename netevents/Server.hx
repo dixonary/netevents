@@ -48,6 +48,7 @@ class Server {
     }
 
     public function listen(Host:String, Port:Int) {
+        host = Host;
         port = Port;
         Thread.create(listenThread);
     }
@@ -59,6 +60,10 @@ class Server {
         sock.listen(10);
 
         print("server", 'Listening on $host:$port');
+
+        if(onReady() != null) {
+            onReady();
+        }
 
         while(true) {
             var s = sock.accept();
@@ -78,10 +83,6 @@ class Server {
             tOut.sendMessage(client);
 
             clients.set(cid, client);
-        }
-
-        if(onReady() != null) {
-            onReady();
         }
 
     }
