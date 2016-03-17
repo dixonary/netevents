@@ -84,14 +84,14 @@ class Client {
             }
             catch(e:Dynamic) {
                 print("conn", 'Retrying... ("$e") [attempt $attempts of $maxRetries]');
-                if(onRetry != null) onRetry();
+                if(onRetry != null) onRetry(null);
                 Sys.sleep(retrySpacing);
             }
         }
 
         if(failed) {
             print("conn", 'Connection failed after $maxRetries attempts.');
-            if(onFailure != null) onFailure();
+            if(onFailure != null) onFailure(null);
             else                  throw 'Connection failed.';
         }
         else {
