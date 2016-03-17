@@ -76,7 +76,7 @@ class Client {
         var attempts:Int = 0;
         var failed:Bool = true;
 
-        while(attempts++ <= maxRetries) {
+        while(attempts++ < maxRetries) {
             try {
                 sock.connect(new sys.net.Host(host),port);
                 failed = false;
