@@ -34,7 +34,7 @@ class Server {
         var tListen = Thread.create(listen);
     }
 
-    function on(event:String, callback:Dynamic->Void) {
+    public function on(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();
@@ -129,7 +129,7 @@ class Server {
             while(true) {
                 var k:String = Thread.readMessage(true);
                 if(client == null || client.socket == null) return;
-                print("send", c);
+                print("send", k);
                 client.socket.write(k+"\n");
             }
         }
