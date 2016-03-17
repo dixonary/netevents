@@ -17,21 +17,20 @@ import sys.net.Socket;
 
 class Server {
 
-    var latest:Int = 0;
     var clients:Map<Int,ClientInfo>;
     var events :Map<String, Dynamic->Void>;
+
     var port:Int = 0;
+    var latestId:Int = 0;
 
     var mutex:Mutex;
 
-    public function new(Port:Int):Void {
+    public function new():Void {
+        port = Port;
 
         mutex = new Mutex();
-
-        port = Port;
         clients = new Map();
-
-        var tListen = Thread.create(listen);
+        events = new Map();
     }
 
     public function on(event:String, callback:Dynamic->Void) {
@@ -42,7 +41,12 @@ class Server {
         print("events", 'Added event handler "$event"');
     }
 
-    function listen():Void {
+    public function listen(Port:Int) {
+        port = Port;
+        Thread.create(listenThread);
+    }
+
+    function listenThread():Void {
 
         var host:String = "0.0.0.0";
 
@@ -54,10 +58,10 @@ class Server {
 
         while(true) {
             var s = sock.accept();
-            var cid = latest++;
+            var cid = latestId++;
             var cName = s.peer().host.reverse();
-            var tIn = Thread.create(socketIn);
-            var tOut = Thread.create(socketOut);
+            var tIn = Thread.create(socketInThread);
+            var tOut = Thread.create(socketOutThread);
 
             var client = {id:cid,
                           socket:s,
@@ -87,7 +91,7 @@ class Server {
         }
     }
 
-    function socketIn():Void {
+    function socketInThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
 
         try {
@@ -123,7 +127,7 @@ class Server {
     }
 
     // Thread which deals with the outgoing sockets.
-    function socketOut():Void {
+    function socketOutThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
         try {
             while(true) {
