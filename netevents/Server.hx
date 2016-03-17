@@ -65,7 +65,7 @@ class Server {
         print("server", 'Listening on $host:$port');
 
         var onReady = events.get("__READY");
-        if(onReady != null) onReady(null, null);
+        if(onReady != null) onReady(null);
 
         while(true) {
             var s = sock.accept();
@@ -136,7 +136,7 @@ class Server {
             if(client.socket == null) return;
 
             var onDC = events.get("__DISCONNECT");
-            if(onDC != null)  onDC(client, null);
+            if(onDC != null)  onDC({client:client, content:null});
 
             clients.remove(client.id);
         }
