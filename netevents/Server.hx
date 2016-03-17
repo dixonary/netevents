@@ -1,3 +1,5 @@
+package netevents;
+
 #if neko
 import neko.vm.Thread;
 import neko.vm.Mutex;
