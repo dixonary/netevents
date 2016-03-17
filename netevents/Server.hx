@@ -119,11 +119,11 @@ class Server {
                 mutex.acquire();
                 var callback:Null<Dynamic->Void> = events.get(c.type);
     // Call this to specify a callback for a given event type.
-                print("test","here");
                 if(callback == null) {
                     print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
                 else {
+                    print("test", c);
                     callback(c.content);
                 }
                 mutex.release();
