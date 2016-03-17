@@ -72,13 +72,13 @@ class Server {
 
     }
 
-    public function send(id:Int, data:Dynamic) {
+    public function send(id:Int, type:String, data:Dynamic) {
         // Serialise and send anything.
-        var ser = haxe.Json.stringify(data);
+        var ser = haxe.Json.stringify({type:type, content:data});
         clients.get(id).outThread.sendMessage(ser);
     }
-    public function broadcast(data:Dynamic) {
-        var ser = haxe.Json.stringify(data);
+    public function broadcast(type:String, data:Dynamic) {
+        var ser = haxe.Json.stringify({type:type, content:data});
         //trace("[ cast ] sending to "+socks.length+" clients");
         for(i in clients.iterator()) {
             i.outThread.sendMessage(ser);
