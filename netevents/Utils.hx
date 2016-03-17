@@ -1,5 +1,7 @@
 package netevents;
 
+class Utils {
+
     // Helper function for printing connection data,.
     static inline function print(type:String, data:String) {
 #if !NE_QUIET
