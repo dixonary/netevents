@@ -24,7 +24,8 @@ class Client {
     var events:Map<String, Dynamic->Void>;
     var host:String;
     var port:Int = 0;
-    var connected:Bool = false;
+    var mutex:Mutex;
+    var disconnected:Bool = false;
 
     // Callback if the client and server become disconnected.
     // Default behaviour is to error.
@@ -51,7 +52,6 @@ class Client {
 
     public function new() {
         mutex = new Mutex();
-        clients = new Map();
         events = new Map();
     }
 
@@ -84,7 +84,7 @@ class Client {
 
         while(attempts++ <= maxRetries) {
             try {
-                sock.connect(new sys.net.Host(Host),Port);
+                sock.connect(new sys.net.Host(host),port);
                 failed = false;
                 break;
             }
@@ -97,15 +97,15 @@ class Client {
         if(failed) {
             print("conn", 'Connection failed after $maxRetries attempts.');
             if(onFailure != null) onFailure();
-            else                  error('Connection failed.');
+            else                  throw 'Connection failed.';
         }
         else {
             print("conn", "Connected!");
             print("conn", "Dispatching TCP send/rcv threads");
 
             sockets = {
-                tIn:  Thread.create(inSockTCP),
-                tOut: Thread.create(outSockTCP)
+                tIn:  Thread.create(socketInThread),
+                tOut: Thread.create(socketOutThread)
             };
 
             sockets.tIn.sendMessage(sock);
@@ -128,7 +128,7 @@ class Client {
             while(true) {
                 var k = sock.input.readLine();
 
-                printVerbose(recv, k);
+                printVerbose("recv", k);
 
                 var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
@@ -152,8 +152,9 @@ class Client {
         catch(e:Dynamic) {
             print("err", '$e - disconnected');
             if(disconnected) return;
+            disconnected = true;
             if(onDisconnect == null) {
-                error("Disconnected from server.");
+                throw "Disconnected from server.";
             }
             else {
                 onDisconnect();
@@ -175,8 +176,9 @@ class Client {
         catch(e:Dynamic) {
             print("err", '$e - disconnected');
             if(disconnected) return;
+            disconnected = true;
             if(onDisconnect == null) {
-                error("Disconnected from server.");
+                throw "Disconnected from server.";
             }
             else {
                 onDisconnect();
