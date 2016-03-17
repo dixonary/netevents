@@ -20,7 +20,7 @@ import netevents.Utils.*;
 class Server {
 
     var clients:Map<Int,ClientInfo>;
-    var events :Map<String, Dynamic->Void>;
+    var events :Map<String, Message->Void>;
 
     var host:String;
     var port:Int = 0;
@@ -123,9 +123,7 @@ class Server {
                     print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
                 else {
-                    print("test", "hi");
-                    callback(c.content);
-                    print("test", "hi2");
+                    callback({client:client, content:c.content});
                 }
                 mutex.release();
             }
