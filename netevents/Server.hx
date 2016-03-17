@@ -20,11 +20,11 @@ class Server {
     var events :Map<String, Dynamic->Void>;
     var port:Int = 0;
 
-    var eventLock:Mutex;
+    var mutex:Mutex;
 
     public function new(Port:Int):Void {
 
-        eventLock = new Mutex();
+        mutex = new Mutex();
 
         port = Port;
         clients = new Map();
