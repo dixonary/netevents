@@ -26,8 +26,6 @@ class Server {
     var mutex:Mutex;
 
     public function new():Void {
-        port = Port;
-
         mutex = new Mutex();
         clients = new Map();
         events = new Map();
