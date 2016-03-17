@@ -1,0 +1,11 @@
+{
+    "name"          : "netevents",
+    "url"           : "https://github.com/dixonary/netevents",
+    "license"       : "Public",
+    "tags"          : ["cpp","neko","java","system","cross","android","utility","networking", "event", "native"],
+    "description"   : "An event-driven TCP server-client architecture.",
+    "version"       : "1.0.0-alpha",
+    "releasenote"   : "First release, trust nothing and nobody.",
+    "contributors"  : "Dixonary",
+    "dependencies"  : {}
+}
