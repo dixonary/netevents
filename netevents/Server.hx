@@ -28,6 +28,10 @@ class Server {
 
     var mutex:Mutex;
 
+    // Callback for when the server is ready to start sending/receiving data.
+    // Default behaviour is to do nothing.
+    public var onReady:Void->Void;
+
     public function new():Void {
         mutex = new Mutex();
         clients = new Map();
@@ -74,6 +78,10 @@ class Server {
             tOut.sendMessage(client);
 
             clients.set(cid, client);
+        }
+
+        if(onReady() != null) {
+            onReady();
         }
 
     }
