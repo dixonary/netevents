@@ -39,6 +39,9 @@ class Server {
     }
 
     // Call this to specify a callback for a given event type.
+    // RESERVED EVENT NAMES which you should use:
+    //      * __READY
+    //      * __DISCONNECT
     public function registerEvent(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
@@ -61,9 +64,8 @@ class Server {
 
         print("server", 'Listening on $host:$port');
 
-        if(onReady() != null) {
-            onReady();
-        }
+        var onReady = events.get("__READY");
+        if(onReady != null) onReady(null, null);
 
         while(true) {
             var s = sock.accept();
@@ -132,6 +134,10 @@ class Server {
             print("err", '$e - attempting recovery');
             print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
             if(client.socket == null) return;
+
+            var onDC = events.get("__DISCONNECT");
+            if(onDC != null)  onDC(client, null);
+
             clients.remove(client.id);
         }
     }

@@ -27,22 +27,6 @@ class Client {
     var mutex:Mutex;
     var disconnected:Bool = false;
 
-    // Callback if the client and server become disconnected.
-    // Default behaviour is to error.
-    public var onDisconnect:Void->Void;
-
-    // Callback if the client needs to retry connecting.
-    // Default behaviour is to do nothing.
-    public var onRetry     :Void->Void;
-
-    // Callback if the client is unable to connect.
-    // Default behaviour is to error.
-    public var onFailure   :Void->Void;
-
-    // Callback if the client connects to a server.
-    // Default behaviour is to do nothing.
-    public var onConnect   :Void->Void;
-
     // Number of times to retry connecting before declaring failure.
     public var maxRetries:Int = 5;
 
@@ -56,6 +40,11 @@ class Client {
     }
 
     // Call this to specify a callback for a given event type.
+    // RESERVED EVENT NAMES which you should hook into:
+    //      * __CONNECT     Called when a connection is established.
+    //      * __RETRY       Called when attempting to connect for a second/third/.. time.
+    //      * __FAILURE     Called when attempting to connect fails after X retries.
+    //      * __DISCONNECT  Called when the connection is dropped.
     public function registerEvent(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
@@ -73,9 +62,14 @@ class Client {
     public function connectThread() {
         var sock = new Socket();
 
+        var onFailure = events.get("__FAILURE");
+        var onConnect= events.get("__CONNECT");
+        var onDisconnect = events.get("__DISCONNECT");
+        var onRetry = events.get("__RETRY");
+
         // Helpful "You might be doing something wrong" info
         if (onFailure == null || onConnect == null || onDisconnect == null) {
-            print("info", "You should set onFailure(), onConnect() and onDisconnect() before connecting!");
+            print("info", "You should set hooks for __FAILURE, __CONNECT and __DISCONNECT before connecting!");
             print("info", "Otherwise your program will throw errors when networking goes wrong.");
         }
 
@@ -90,6 +84,7 @@ class Client {
             }
             catch(e:Dynamic) {
                 print("conn", 'Retrying... ("$e") [attempt $attempts of $maxRetries]');
+                if(onRetry != null) onRetry();
                 Sys.sleep(retrySpacing);
             }
         }
@@ -111,7 +106,7 @@ class Client {
             sockets.tIn.sendMessage(sock);
             sockets.tOut.sendMessage(sock);
 
-            if(onConnect != null) onConnect();
+            if(onConnect != null) onConnect(null);
         }
 
     }
@@ -153,11 +148,12 @@ class Client {
             print("err", '$e - disconnected');
             if(disconnected) return;
             disconnected = true;
+            var onDisconnect = events.get("__DISCONNECT");
             if(onDisconnect == null) {
                 throw "Disconnected from server.";
             }
             else {
-                onDisconnect();
+                onDisconnect(null);
             }
         }
     }
@@ -177,11 +173,12 @@ class Client {
             print("err", '$e - disconnected');
             if(disconnected) return;
             disconnected = true;
+            var onDisconnect = events.get("__DISCONNECT");
             if(onDisconnect == null) {
                 throw "Disconnected from server.";
             }
             else {
-                onDisconnect();
+                onDisconnect(null);
             }
         }
     }
