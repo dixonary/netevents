@@ -44,7 +44,7 @@ class Server {
         events.set(event, callback);
         mutex.release();
 
-        print("events", 'Added event handler "$event"');
+        print("events", 'Added event handler "$event"', haxe.PosInfos);
     }
 
     public function listen(Host:String, Port:Int) {
@@ -59,7 +59,7 @@ class Server {
         sock.bind(new sys.net.Host(host), port);
         sock.listen(10);
 
-        print("server", 'Listening on $host:$port');
+        print("server", 'Listening on $host:$port', haxe.PosInfos);
 
         if(onReady() != null) {
             onReady();
@@ -77,7 +77,7 @@ class Server {
                           name:cName,
                           inThread:tIn,
                           outThread:tOut};
-            print("conn",'Connected to ${client.name} (id ${client.id} )');
+            print("conn",'Connected to ${client.name} (id ${client.id} )', haxe.PosInfos);
 
             tIn.sendMessage(client);
             tOut.sendMessage(client);
@@ -107,12 +107,12 @@ class Server {
             while(true) {
                 var k = client.socket.input.readLine();
 
-                printVerbose("recv", k);
+                printVerbose("recv", k, haxe.PosInfos);
 
                 var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
                 if(c.type == null || c.type == "") {
-                    print("recv", "Received data has no TYPE - discarding");
+                    print("recv", "Received data has no TYPE - discarding", haxe.PosInfos);
                     continue;
                 }
 
@@ -120,7 +120,7 @@ class Server {
                 var callback:Null<Dynamic->Void> = events.get(c.type);
     // Call this to specify a callback for a given event type.
                 if(callback == null) {
-                    print("events", 'Received data type "${c.type}" has no callback - discarding');
+                    print("events", 'Received data type "${c.type}" has no callback - discarding', haxe.PosInfos);
                 }
                 else {
                     callback(c.content);
@@ -129,8 +129,8 @@ class Server {
             }
         }
         catch(e:Dynamic) {
-            print("err", '$e - attempting recovery');
-            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+            print("err", '$e - attempting recovery', haxe.PosInfos);
+            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.', haxe.PosInfos);
             if(client.socket == null) return;
             clients.remove(client.id);
         }
@@ -143,13 +143,13 @@ class Server {
             while(true) {
                 var k:String = Thread.readMessage(true);
                 if(client == null || client.socket == null) return;
-                printVerbose("send", k);
+                printVerbose("send", k, haxe.PosInfos);
                 client.socket.write(k+"\n");
             }
         }
         catch(e:Dynamic) {
-            print("err", '$e - attempting recovery');
-            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+            print("err", '$e - attempting recovery', haxe.PosInfos);
+            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.', haxe.PosInfos);
             clients.remove(client.id);
         }
 
