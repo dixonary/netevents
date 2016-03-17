@@ -38,7 +38,7 @@ class Server {
     // RESERVED EVENT NAMES which you should use:
     //      * __READY
     //      * __DISCONNECT
-    public function registerEvent(event:String, callback:Dynamic->Void) {
+    public function on(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();

@@ -45,7 +45,7 @@ class Client {
     //      * __RETRY       Called when attempting to connect for a second/third/.. time.
     //      * __FAILURE     Called when attempting to connect fails after X retries.
     //      * __DISCONNECT  Called when the connection is dropped.
-    public function registerEvent(event:String, callback:Dynamic->Void) {
+    public function on(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();
