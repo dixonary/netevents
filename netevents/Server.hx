@@ -91,7 +91,7 @@ class Server {
         try {
             while(true) {
                 var k = client.socket.input.readLine();
-                var c = haxe.Json.parse(k);
+                var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
                 print("recv", c);
 
                 if(c.type == null || c.type == "") {
