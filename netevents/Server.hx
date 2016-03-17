@@ -1,13 +1,10 @@
 #if neko
-import neko.vm.Deque;
 import neko.vm.Thread;
 import neko.vm.Mutex;
 #elseif cpp
-import cpp.vm.Deque;
 import cpp.vm.Thread;
 import cpp.vm.Mutex;
 #elseif java
-import java.vm.Deque;
 import java.vm.Thread;
 import java.vm.Mutex;
 #else
@@ -18,8 +15,6 @@ import sys.net.Socket;
 
 class Server {
 
-    public var data:Deque<Message>;
-
     var latest:Int = 0;
     var clients:Map<Int,ClientInfo>;
     var events :Map<String, Dynamic->Void>;
@@ -29,7 +24,6 @@ class Server {
 
     public function new(Port:Int):Void {
 
-        data = new Deque();
         eventLock = new Mutex();
 
         port = Port;
@@ -39,7 +33,10 @@ class Server {
     }
 
     function on(event:String, callback:Dynamic->Void) {
+        mutex.acquire();
         events.set(event, callback);
+        mutex.release();
+
         print("events", 'Added event handler "$event"');
     }
 
@@ -116,7 +113,6 @@ class Server {
         catch(e:Dynamic) {
             print("err", '$e - attempting recovery');
             print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
-            data.add({client:client, content:{type:"dcon"}});
             if(client.socket == null) return;
             clients.remove(client.id);
         }
