@@ -123,8 +123,9 @@ class Server {
                     print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
                 else {
-                    print("test", c.toString());
+                    print("test", "hi");
                     callback(c.content);
+                    print("test", "hi2");
                 }
                 mutex.release();
             }
