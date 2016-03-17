@@ -15,7 +15,7 @@ import java.vm.Mutex;
 import sys.net.Host;
 import sys.net.Socket;
 
-using netevents.Utils.*;
+import netevents.Utils.*;
 
 class Client {
 
