@@ -15,11 +15,14 @@ import java.vm.Mutex;
 import sys.net.Host;
 import sys.net.Socket;
 
+using Utils;
+
 class Server {
 
     var clients:Map<Int,ClientInfo>;
     var events :Map<String, Dynamic->Void>;
 
+    var host:String;
     var port:Int = 0;
     var latestId:Int = 0;
 
@@ -31,7 +34,8 @@ class Server {
         events = new Map();
     }
 
-    public function on(event:String, callback:Dynamic->Void) {
+    // Call this to specify a callback for a given event type.
+    public function registerEvent(event:String, callback:Dynamic->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();
@@ -39,14 +43,12 @@ class Server {
         print("events", 'Added event handler "$event"');
     }
 
-    public function listen(Port:Int) {
+    public function listen(Host:String, Port:Int) {
         port = Port;
         Thread.create(listenThread);
     }
 
     function listenThread():Void {
-
-        var host:String = "0.0.0.0";
 
         var sock = new Socket();
         sock.bind(new sys.net.Host(host), port);
@@ -96,7 +98,7 @@ class Server {
             while(true) {
                 var k = client.socket.input.readLine();
 
-                print("recv", k);
+                printVerbose("recv", k);
 
                 var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
@@ -107,8 +109,9 @@ class Server {
 
                 mutex.acquire();
                 var callback:Null<Dynamic->Void> = events.get(c.type);
+    // Call this to specify a callback for a given event type.
                 if(callback == null) {
-                    print("recv", 'Received data type "${c.type}" has no callback - discarding');
+                    print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
                 else {
                     callback(c.content);
@@ -131,7 +134,7 @@ class Server {
             while(true) {
                 var k:String = Thread.readMessage(true);
                 if(client == null || client.socket == null) return;
-                print("send", k);
+                printVerbose("send", k);
                 client.socket.write(k+"\n");
             }
         }
@@ -142,15 +145,6 @@ class Server {
         }
 
     }
-
-
-    // Helper function for printing connection data,.
-    inline function print(type:String, data:String) {
-#if NE_VERBOSE
-        trace('[ ${StringTools.lpad(type," ",16)} ] $data');
-#end
-    }
-
 
 }
 
