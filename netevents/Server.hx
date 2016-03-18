@@ -52,6 +52,14 @@ class Server {
         Thread.create(listenThread);
     }
 
+    public function kick(id:Int) {
+        var client = clients.get(id);
+        if(client != null) {
+            client.tOut.sendMessage("die");
+        }
+        clients.remove(id);
+    }
+
     function listenThread():Void {
 
         var sock = new Socket();
@@ -93,7 +101,7 @@ class Server {
     public function broadcast(type:String, data:Dynamic) {
         var ser = haxe.Json.stringify({type:type, content:data});
         //trace("[ cast ] sending to "+socks.length+" clients");
-        for(i in clients.iterator()) {
+        for(i in clients) {
             i.outThread.sendMessage(ser);
         }
     }
