@@ -55,6 +55,7 @@ class Server {
     public function kick(id:Int) {
         var client = clients.get(id);
         if(client != null && client.socket != null) {
+            client.socket.shutdown(true,true);
             client.socket.close();
         }
         clients.remove(id);
