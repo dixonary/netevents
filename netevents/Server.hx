@@ -55,7 +55,7 @@ class Server {
     public function kick(id:Int) {
         var client = clients.get(id);
         if(client != null) {
-            client.tOut.sendMessage("die");
+            client.outThread.sendMessage("die");
         }
         clients.remove(id);
     }
