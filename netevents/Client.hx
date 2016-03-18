@@ -146,6 +146,7 @@ class Client {
         }
         catch(e:Dynamic) {
             print("err", '$e - disconnected');
+            print("err", haxe.CallStack.toString());
             if(disconnected) return;
             disconnected = true;
             var onDisconnect = events.get("__DISCONNECT");
