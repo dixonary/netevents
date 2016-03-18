@@ -128,7 +128,7 @@ class Server {
         }
         catch(e:Dynamic) {
             print("err", '$e');
-            print("err", haxe.CallStack.toString(haxe.CallStack.callStack()));
+            print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
             print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
             if(client.socket == null) return;
 
