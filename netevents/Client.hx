@@ -67,6 +67,8 @@ class Client {
         var onDisconnect = events.get("__DISCONNECT");
         var onRetry = events.get("__RETRY");
 
+        sock.setTimeout(5);
+
         // Helpful "You might be doing something wrong" info
         if (onFailure == null || onConnect == null || onDisconnect == null) {
             print("info", "You should set hooks for __FAILURE, __CONNECT and __DISCONNECT before connecting!");
