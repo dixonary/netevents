@@ -147,6 +147,8 @@ class Client {
             }
         }
         catch(e:Dynamic) {
+            if(disconnected) return;
+            disconnected = true;
             print("err", '$e - disconnected');
             print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
             var onDisconnect = events.get("__DISCONNECT");
@@ -154,7 +156,7 @@ class Client {
                 throw "Disconnected from server.";
             }
             else {
-                onDisconnect(null);
+                onDisconnect({reason:e});
             }
         }
     }
@@ -171,6 +173,8 @@ class Client {
             }
         }
         catch(e:Dynamic) {
+            if(disconnected) return;
+            disconnected = true;
             print("err", '$e - disconnected');
             var onDisconnect = events.get("__DISCONNECT");
             if(onDisconnect == null) {
