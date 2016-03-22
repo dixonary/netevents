@@ -97,6 +97,7 @@ class Server {
 
     public function send(id:Int, type:String, data:Dynamic) {
         // Serialise and send anything.
+        if(clients.get(id) == null) return;
         var ser = haxe.Json.stringify({type:type, content:data});
         clients.get(id).outThread.sendMessage(ser);
     }
