@@ -6,10 +6,10 @@ class Utils {
     public static inline function print(type:String, data:String, ?pos:haxe.PosInfos) {
 #if !NE_QUIET
         if (pos == null) {
-            trace('[ ${StringTools.lpad(type," ",10)} ] $data');
+            Sys.println('[ ${StringTools.lpad(type," ",10)} ] $data');
         }
         else {
-            trace('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
+            Sys.println('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
         }
 #end
 
@@ -19,10 +19,10 @@ class Utils {
     public static inline function printVerbose(type:String, data:String, ?pos:haxe.PosInfos) {
 #if NE_VERBOSE
         if (pos == null) {
-            trace('[ ${StringTools.lpad(type," ",10)} ] $data');
+            Sys.println('[ ${StringTools.lpad(type," ",10)} ] $data');
         }
         else {
-            trace('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
+            Sys.println('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
         }
 #end
 
