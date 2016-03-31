@@ -2,7 +2,7 @@
 
 A simple, event-driven TCP networking client-server architecture.
 
-# DO NOT USE THIS CODE. I AM STILL WORKING ON IT AND IT DOES NOT ACTUALLY WORK YET.
+# DO NOT USE THIS CODE. I AM STILL WORKING ON IT AND IT ~~DOES NOT ACTUALLY WORK YET~~ ONLY JUST WORKS.
 
 ## Supported targets
 
