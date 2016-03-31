@@ -1,6 +1,6 @@
 # netevents
 
-A simple, event-driven TCP networking client-server architecture.
+A simple, event-driven TCP networking client-server architecture for Haxe.
 
 # DO NOT USE THIS CODE. I AM STILL WORKING ON IT AND IT ~~DOES NOT ACTUALLY WORK YET~~ ONLY JUST WORKS.
 
