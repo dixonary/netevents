@@ -74,7 +74,7 @@ class Server {
 
         while(true) {
             var s = sock.accept();
-            s.setTimeout(5);
+            s.setTimeout(60);
             var cid = latestId++;
             var cName = s.peer().host.reverse();
             var tIn = Thread.create(socketInThread);
