@@ -105,8 +105,6 @@ class Client {
                 tOut: Thread.create(socketOutThread)
             };
 
-            Sys.sleep(1000);
-
             sockets.tIn.sendMessage(sock);
             sockets.tOut.sendMessage(sock);
 
@@ -116,6 +114,9 @@ class Client {
     }
 
     public function send(type:String, data:Dynamic):Void {
+        if(sockets.tOut == null) {
+            print("err", 'Cannot send message of type "$type" - not ready! :(');
+        }
         sockets.tOut.sendMessage(haxe.Json.stringify({type:type,content:data}));
     }
 
