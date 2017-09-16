@@ -137,9 +137,7 @@ class Server {
                 mutex.release();
             }
             catch(e:Dynamic) {
-                print("itis", (e.toString() == "Blocked")?"true":"false");
-                print("itwas", (e.indexOf("Blocked")).toString());
-                if(e.indexOf("Blocked") != -1) continue;
+                if(e.toString().indexOf("Blocked") != -1) continue;
                 print("err", '$e');
                 print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
                 print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
