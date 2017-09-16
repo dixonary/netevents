@@ -114,7 +114,7 @@ class Client {
     }
 
     public function send(type:String, data:Dynamic):Void {
-        if(sockets.tOut == null) {
+        if(sockets == null || sockets.tOut == null) {
             print("err", 'Cannot send message of type "$type" - not ready! :(');
         }
         sockets.tOut.sendMessage(haxe.Json.stringify({type:type,content:data}));
