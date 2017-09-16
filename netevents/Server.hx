@@ -64,6 +64,7 @@ class Server {
     function listenThread():Void {
 
         var sock = new Socket();
+        sock.setBlocking(false);
         sock.bind(new sys.net.Host(host), port);
         sock.listen(10);
 
