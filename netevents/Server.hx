@@ -112,8 +112,8 @@ class Server {
     function socketInThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
 
-        try {
-            while(true) {
+        while(true) {
+            try {
                 var k = client.socket.input.readLine();
 
                 printVerbose("recv", k);
@@ -136,17 +136,19 @@ class Server {
                 }
                 mutex.release();
             }
-        }
-        catch(e:Dynamic) {
-            print("err", '$e');
-            print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
-            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
-            if(client.socket == null) return;
+            catch(e:Dynamic) {
+                if(e == "Blocked") continue;
+                print("err", '$e');
+                print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+                print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+                if(client.socket == null) return;
 
-            var onDC = events.get("__DISCONNECT");
-            if(onDC != null)  onDC({client:client, content:null});
+                var onDC = events.get("__DISCONNECT");
+                if(onDC != null)  onDC({client:client, content:null});
 
-            clients.remove(client.id);
+                clients.remove(client.id);
+                break;
+            }
         }
     }
 
