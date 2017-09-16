@@ -81,10 +81,10 @@ class Server {
             var tOut = Thread.create(socketOutThread);
 
             var client = {id:cid,
-                          socket:s,
-                          name:cName,
-                          inThread:tIn,
-                          outThread:tOut};
+                socket:s,
+                name:cName,
+                inThread:tIn,
+                outThread:tOut};
             print("conn",'Connected to ${client.name} (id ${client.id} )');
 
             tIn.sendMessage(client);
@@ -112,42 +112,42 @@ class Server {
     function socketInThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
 
-        while(true) {
-            try {
-                    var k = client.socket.input.readLine();
+        try {
+            while(true) {
+                var k = client.socket.input.readLine();
 
-                    printVerbose("recv", k);
+                printVerbose("recv", k);
 
-                    var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
+                var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
-                    if(c.type == null || c.type == "") {
-                        print("recv", "Received data has no TYPE - discarding");
-                        continue;
-                    }
+                if(c.type == null || c.type == "") {
+                    print("recv", "Received data has no TYPE - discarding");
+                    continue;
+                }
 
-                    mutex.acquire();
-                    var callback:Null<Dynamic->Void> = events.get(c.type);
-        // Call this to specify a callback for a given event type.
-                    if(callback == null) {
-                        print("events", 'Received data type "${c.type}" has no callback - discarding');
-                    }
-                    else {
-                        callback({client:client, content:c.content});
-                    }
-                    mutex.release();
+                mutex.acquire();
+                var callback:Null<Dynamic->Void> = events.get(c.type);
+                // Call this to specify a callback for a given event type.
+                if(callback == null) {
+                    print("events", 'Received data type "${c.type}" has no callback - discarding');
+                }
+                else {
+                    callback({client:client, content:c.content});
+                }
+                mutex.release();
             }
-            catch(e:Dynamic) {
-                if(e == "Blocked") continue;
-                print("err", '$e');
-                print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
-                print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
-                if(client.socket == null) return;
+        }
+        catch(e:Dynamic) {
+            if(e == "Blocked") continue;
+            print("err", '$e');
+            print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+            if(client.socket == null) return;
 
-                var onDC = events.get("__DISCONNECT");
-                if(onDC != null)  onDC({client:client, content:null});
+            var onDC = events.get("__DISCONNECT");
+            if(onDC != null)  onDC({client:client, content:null});
 
-                clients.remove(client.id);
-            }
+            clients.remove(client.id);
         }
     }
 
@@ -156,11 +156,11 @@ class Server {
         var client:ClientInfo           = Thread.readMessage(true);
         while(true) {
             try {
-                    var k:String = Thread.readMessage(true);
-                    if(client == null || client.socket == null) return;
-                    printVerbose("send", k);
-                    client.socket.write(k+"\n");
-                }
+                var k:String = Thread.readMessage(true);
+                if(client == null || client.socket == null) return;
+                printVerbose("send", k);
+                client.socket.write(k+"\n");
+            }
             catch(e:Dynamic) {
                 print("err", '$e - attempting recovery');
                 print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
