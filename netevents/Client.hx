@@ -37,6 +37,7 @@ class Client {
     public function new() {
         mutex = new Mutex();
         events = new Map();
+        Utils.print("info", "New client instantiated.");
     }
 
     // Call this to specify a callback for a given event type.
