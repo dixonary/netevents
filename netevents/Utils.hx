@@ -9,7 +9,7 @@ class Utils {
             Sys.println('[ ${Date.now()} ] [ ${StringTools.lpad(type," ",10)} ] $data');
         }
         else {
-            Sys.println('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
+            Sys.println('[ ${Date.now()} ] [ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
         }
 #end
 
