@@ -147,7 +147,6 @@ class Server {
             if(onDC != null)  onDC({client:client, content:null});
 
             clients.remove(client.id);
-            break;
         }
     }
 
