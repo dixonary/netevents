@@ -138,7 +138,6 @@ class Server {
             }
         }
         catch(e:Dynamic) {
-            if(e == "Blocked") continue;
             print("err", '$e');
             print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
             print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
