@@ -105,6 +105,8 @@ class Client {
                 tOut: Thread.create(socketOutThread)
             };
 
+            sleep(1000);
+
             sockets.tIn.sendMessage(sock);
             sockets.tOut.sendMessage(sock);
 
