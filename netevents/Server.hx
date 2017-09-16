@@ -137,7 +137,8 @@ class Server {
                 mutex.release();
             }
             catch(e:Dynamic) {
-                print("itwas", e.indexOf("Blocked"));
+                print("itis", Type.getClassName(Type.getClass(e)));
+                print("itwas", (e.indexOf("Blocked")).toString());
                 if(e.indexOf("Blocked") != -1) continue;
                 print("err", '$e');
                 print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
