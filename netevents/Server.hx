@@ -64,7 +64,6 @@ class Server {
     function listenThread():Void {
 
         var sock = new Socket();
-        sock.setBlocking(false);
         sock.bind(new sys.net.Host(host), port);
         sock.listen(10);
 
@@ -113,59 +112,60 @@ class Server {
     function socketInThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
 
-        try {
-            while(true) {
-                var k = client.socket.input.readLine();
+        while(true) {
+            try {
+                    var k = client.socket.input.readLine();
 
-                printVerbose("recv", k);
+                    printVerbose("recv", k);
 
-                var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
+                    var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
 
-                if(c.type == null || c.type == "") {
-                    print("recv", "Received data has no TYPE - discarding");
-                    continue;
-                }
+                    if(c.type == null || c.type == "") {
+                        print("recv", "Received data has no TYPE - discarding");
+                        continue;
+                    }
 
-                mutex.acquire();
-                var callback:Null<Dynamic->Void> = events.get(c.type);
-    // Call this to specify a callback for a given event type.
-                if(callback == null) {
-                    print("events", 'Received data type "${c.type}" has no callback - discarding');
-                }
-                else {
-                    callback({client:client, content:c.content});
-                }
-                mutex.release();
+                    mutex.acquire();
+                    var callback:Null<Dynamic->Void> = events.get(c.type);
+        // Call this to specify a callback for a given event type.
+                    if(callback == null) {
+                        print("events", 'Received data type "${c.type}" has no callback - discarding');
+                    }
+                    else {
+                        callback({client:client, content:c.content});
+                    }
+                    mutex.release();
             }
-        }
-        catch(e:Dynamic) {
-            print("err", '$e');
-            print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
-            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
-            if(client.socket == null) return;
+            catch(e:Dynamic) {
+                if(e == "Blocking") continue;
+                print("err", '$e');
+                print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+                print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+                if(client.socket == null) return;
 
-            var onDC = events.get("__DISCONNECT");
-            if(onDC != null)  onDC({client:client, content:null});
+                var onDC = events.get("__DISCONNECT");
+                if(onDC != null)  onDC({client:client, content:null});
 
-            clients.remove(client.id);
+                clients.remove(client.id);
+            }
         }
     }
 
     // Thread which deals with the outgoing sockets.
     function socketOutThread():Void {
         var client:ClientInfo           = Thread.readMessage(true);
-        try {
-            while(true) {
-                var k:String = Thread.readMessage(true);
-                if(client == null || client.socket == null) return;
-                printVerbose("send", k);
-                client.socket.write(k+"\n");
+        while(true) {
+            try {
+                    var k:String = Thread.readMessage(true);
+                    if(client == null || client.socket == null) return;
+                    printVerbose("send", k);
+                    client.socket.write(k+"\n");
+                }
+            catch(e:Dynamic) {
+                print("err", '$e - attempting recovery');
+                print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
+                clients.remove(client.id);
             }
-        }
-        catch(e:Dynamic) {
-            print("err", '$e - attempting recovery');
-            print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
-            clients.remove(client.id);
         }
 
     }
