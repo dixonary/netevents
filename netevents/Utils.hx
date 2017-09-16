@@ -6,7 +6,7 @@ class Utils {
     public static inline function print(type:String, data:String, ?pos:haxe.PosInfos) {
 #if !NE_QUIET
         if (pos == null) {
-            Sys.println('[ ${StringTools.lpad(type," ",10)} ] $data');
+            Sys.println('[ ${Date.now()} ] [ ${StringTools.lpad(type," ",10)} ] $data');
         }
         else {
             Sys.println('[ ${StringTools.lpad(type," ",10)} ] [${pos.fileName},${pos.lineNumber}] $data');
