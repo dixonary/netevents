@@ -148,7 +148,7 @@ class Client {
             catch(e:Dynamic) {
                 if(disconnected) return;
                 disconnected = true;
-                if(e == "Blocking") continue;
+                if(e == "Blocked") continue;
 
                 print("err", '$e - disconnected');
                 print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
