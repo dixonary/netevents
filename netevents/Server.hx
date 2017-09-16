@@ -137,7 +137,7 @@ class Server {
                 mutex.release();
             }
             catch(e:Dynamic) {
-                print("itis", e.toString() == "Blocked");
+                print("itis", (e.toString() == "Blocked").toString());
                 print("itwas", (e.indexOf("Blocked")).toString());
                 if(e.indexOf("Blocked") != -1) continue;
                 print("err", '$e');
