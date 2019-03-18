@@ -38,7 +38,7 @@ class Server {
     // RESERVED EVENT NAMES which you should use:
     //      * __READY
     //      * __DISCONNECT
-    public function on(event:String, callback:Dynamic->Void) {
+    public function on(event:String, callback:Message->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();
@@ -95,13 +95,13 @@ class Server {
 
     }
 
-    public function send(id:Int, type:String, data:Dynamic) {
+    public function send(id:Int, type:String, data:Any) {
         // Serialise and send anything.
         if(clients.get(id) == null) return;
         var ser = haxe.Json.stringify({type:type, content:data});
         clients.get(id).outThread.sendMessage(ser);
     }
-    public function broadcast(type:String, data:Dynamic) {
+    public function broadcast(type:String, data:Any) {
         var ser = haxe.Json.stringify({type:type, content:data});
         //trace("[ cast ] sending to "+socks.length+" clients");
         for(i in clients) {
@@ -118,7 +118,7 @@ class Server {
 
                 printVerbose("recv", k);
 
-                var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
+                var c:{type:String, content:Any} = haxe.Json.parse(k);
 
                 if(c.type == null || c.type == "") {
                     print("recv", "Received data has no TYPE - discarding");
@@ -126,7 +126,7 @@ class Server {
                 }
 
                 mutex.acquire();
-                var callback:Null<Dynamic->Void> = events.get(c.type);
+                var callback:Null<Message->Void> = events.get(c.type);
                 // Call this to specify a callback for a given event type.
                 if(callback == null) {
                     print("events", 'Received data type "${c.type}" has no callback - discarding');
@@ -137,7 +137,7 @@ class Server {
                 mutex.release();
             }
         }
-        catch(e:Dynamic) {
+        catch(e:Any) {
             print("err", '$e');
             print("err", haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
             print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
@@ -160,7 +160,7 @@ class Server {
                 printVerbose("send", k);
                 client.socket.write(k+"\n");
             }
-            catch(e:Dynamic) {
+            catch(e:Any) {
                 print("err", '$e - attempting recovery');
                 print("dcon", 'Client id ${client.id} (${client.name}) disconnected.');
                 clients.remove(client.id);
@@ -173,7 +173,7 @@ class Server {
 
 typedef Message = {
     client:ClientInfo,
-    content:Dynamic
+    content:Any
 }
 
 typedef ClientInfo = {

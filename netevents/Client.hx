@@ -21,7 +21,7 @@ class Client {
 
     var sockets:{tIn:Thread, tOut:Thread};
 
-    var events:Map<String, Dynamic->Void>;
+    var events:Map<String, Any->Void>;
     var host:String;
     var port:Int = 0;
     var mutex:Mutex;
@@ -46,7 +46,7 @@ class Client {
     //      * __RETRY       Called when attempting to connect for a second/third/.. time.
     //      * __FAILURE     Called when attempting to connect fails after X retries.
     //      * __DISCONNECT  Called when the connection is dropped.
-    public function on(event:String, callback:Dynamic->Void) {
+    public function on(event:String, callback:Any->Void) {
         mutex.acquire();
         events.set(event, callback);
         mutex.release();
@@ -85,7 +85,7 @@ class Client {
                 failed = false;
                 break;
             }
-            catch(e:Dynamic) {
+            catch(e:Any) {
                 print("conn", 'Retrying... ("$e") [attempt $attempts of $maxRetries]');
                 if(onRetry != null) onRetry(null);
                 Sys.sleep(retrySpacing);
@@ -114,7 +114,7 @@ class Client {
 
     }
 
-    public function send(type:String, data:Dynamic):Void {
+    public function send(type:String, data:Any):Void {
         if(sockets == null || sockets.tOut == null) {
             print("err", 'Cannot send message of type "$type" - not ready! :(');
             return;
@@ -132,7 +132,7 @@ class Client {
 
                 printVerbose("recv", k);
 
-                var c:{type:String, content:Dynamic} = haxe.Json.parse(k);
+                var c:{type:String, content:Any} = haxe.Json.parse(k);
 
                 if(c.type == null || c.type == "") {
                     print("recv", "Received data has no TYPE - discarding");
@@ -140,7 +140,7 @@ class Client {
                 }
 
                 mutex.acquire();
-                var callback:Null<Dynamic->Void> = events.get(c.type);
+                var callback:Null<Any->Void> = events.get(c.type);
                 if(callback == null) {
                     print("events", 'Received data type "${c.type}" has no callback - discarding');
                 }
@@ -151,7 +151,7 @@ class Client {
 
             }
         }
-        catch(e:Dynamic) {
+        catch(e:Any) {
             if(disconnected) return;
             disconnected = true;
 
@@ -179,7 +179,7 @@ class Client {
                 sock.write(k+"\n");
             }
         }
-        catch(e:Dynamic) {
+        catch(e:Any) {
             if(disconnected) return;
             disconnected = true;
             print("err", '$e - disconnected');
